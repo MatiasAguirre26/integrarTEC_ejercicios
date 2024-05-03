@@ -1,0 +1,67 @@
+*{
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: Arial, sans-serif;
+    background-color: #1c1c1c;
+}
+
+p {
+    text-align: center;
+}
+
+.container {
+    width: 100%;
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content:center;
+}
+
+.card {
+    width: 300px;
+    background-color: #fff;
+    border-radius: 10px;
+    box-shadow: 0 0 10px rgba(0,0,0,0.1);
+    padding: 0 1em 1em 1em;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    color: #1c1c1c;
+    gap: 1em;
+}
+
+.social-media {
+    display: flex;
+    justify-content: center;
+    gap: 2em;
+}& a {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 60px;
+    height: 60px; 
+    padding: 1em;
+    border-radius: 50%; 
+    background-color: #1c1c1c;
+} & svg {
+    width: 100%;
+    height: auto;
+    fill: #fff;
+}
+#banner {
+    width: 50%;
+    width: inherit;
+    border-radius: 10px 10px 0 0;
+}
+
+#photo {
+    width: 40%;
+    margin-top: -50px;
+    border: 6px solid #fff;
+    border-radius: 50%;
+}
