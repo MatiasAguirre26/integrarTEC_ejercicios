@@ -1,0 +1,17 @@
+{
+  "name": "fs_write_read",
+  "version": "1.0.0",
+  "description": "",
+  "type": "module",
+  "main": "fs.js",
+  "scripts": {
+    "dev": "node --watch fs.js",
+    "start": "node fs.js"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "fs": "0.0.1-security"
+  }
+}
