@@ -1,0 +1,2 @@
+La api es para una aplicacion de reciclaje donde se pueda gestionar los usuarios, los puntos, los beneficios, las actividades de reciclaje y los canjes de beneficios.
+Serviría para realizar un seguimiento de los usuarios, los puntos que ganan a través de sus actividades de reciclaje, y los beneficios que canjean con esos puntos

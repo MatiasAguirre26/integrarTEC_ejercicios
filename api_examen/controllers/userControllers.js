@@ -1,10 +1,9 @@
 import { PrismaClient } from "@prisma/client"
 import HTTP_STATUS from "../helpers/httpStatus.js";
-import { hashPassword } from '../utils/bcrypt.js'; // Importar la función de hash
-import { generateToken } from '../utils/jwt.js'; // Importar la función para generar token
+import { hashPassword } from '../utils/bcrypt.js'; 
+import { generateToken } from '../utils/jwt.js'; 
 
 //Logica de lo que va hacer la ruta, funcionalidad
-
 const prisma = new PrismaClient()
 
 export const userControllers = () => {
@@ -33,8 +32,8 @@ export const userControllers = () => {
 
             const token = generateToken({ id: createdUser.id, email: createdUser.email }); // Generar token
             
-            return res.status(HTTP_STATUS.CREATED).json(createdUser);
-            // return res.status(HTTP_STATUS.CREATED).json({ user: createdUser, token });
+            // return res.status(HTTP_STATUS.CREATED).json(createdUser);
+            return res.status(HTTP_STATUS.CREATED).json({ user: createdUser, token });
         } catch (error) {
             next(error);
         } finally {
@@ -42,32 +41,32 @@ export const userControllers = () => {
         }
     };
 
-    // const loginUser = async (req, res, next) => {
-    //     const { email, password } = req.body;
-    //     try {
-    //         const user = await prisma.user.findUnique({
-    //             where: { email },
-    //         });
+    const loginUser = async (req, res, next) => {
+        const { email, password } = req.body;
+        try {
+            const user = await prisma.user.findUnique({
+                where: { email },
+            });
 
-    //         if (!user) {
-    //             return res.status(HTTP_STATUS.UNAUTHORIZED).json({ error: 'Invalid credentials' });
-    //         }
+            if (!user) {
+                return res.status(HTTP_STATUS.UNAUTHORIZED).json({ error: 'Invalid credentials' });
+            }
 
-    //         const isPasswordValid = await comparePassword(password, user.password);
+            const isPasswordValid = await comparePassword(password, user.password);
 
-    //         if (!isPasswordValid) {
-    //             return res.status(HTTP_STATUS.UNAUTHORIZED).json({ error: 'Invalid credentials' });
-    //         }
+            if (!isPasswordValid) {
+                return res.status(HTTP_STATUS.UNAUTHORIZED).json({ error: 'Invalid credentials' });
+            }
 
-    //         const token = generateToken({ id: user.id, email: user.email });
+            const token = generateToken({ id: user.id, email: user.email });
 
-    //         return res.status(HTTP_STATUS.OK).json({ user, token });
-    //     } catch (error) {
-    //         next(error);
-    //     } finally {
-    //         await prisma.$disconnect();
-    //     }
-    // };
+            return res.status(HTTP_STATUS.OK).json({ user, token });
+        } catch (error) {
+            next(error);
+        } finally {
+            await prisma.$disconnect();
+        }
+    };
 
     const getUserById = async (req, res, next) => {
         const { id } = req.params;
@@ -107,8 +106,8 @@ export const userControllers = () => {
     
     const updateById = async (req, res, next) => {
         const { id } = req.params;
-        const newUserData = req.body;
-        // const { password, ...newUserData } = req.body;
+        // const newUserData = req.body;
+        const { password, ...newUserData } = req.body;
         try {
             // Hashear la nueva contraseña si se proporciona
             // if (password) {
@@ -131,7 +130,7 @@ export const userControllers = () => {
     return {
         getUser,
         createUser,
-        loginUser, // Agregar loginUser al export
+        loginUser,
         getUserById,
         deleteById,
         updateById
