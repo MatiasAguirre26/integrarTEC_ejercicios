@@ -1,10 +1,12 @@
 import { Router } from 'express';
 import { userControllers } from '../controllers/userControllers.js';
 
-const { loginUser } = userControllers();
+export const authRoutes = () => {
+    const authRouter = Router();
+    const { _register, loginUser } = userControllers();
 
-const authRouter = Router();
+    //authRouter.post('/register', register);
+    authRouter.post('/login', loginUser);
 
-authRouter.post('/login', loginUser);
-
-export default authRouter;
+    return authRouter;
+};
