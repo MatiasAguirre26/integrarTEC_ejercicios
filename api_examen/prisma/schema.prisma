@@ -16,48 +16,48 @@ datasource db {
 //Esquema
 model User {
   id              Int       @id @default(autoincrement())
-  nombre          String
-  correoElectronico String   @unique
-  password     String
-  fechaCreacion   DateTime  @default(now())
-  puntosTotales   Int       @default(0)
+  name            String
+  email           String   @unique
+  password        String
+  createdAt       DateTime  @default(now())
+  totalPoints     Int       @default(0)
   points          Point[]
   rewardRedemptions RewardRedemption[]
   recyclingActivities RecyclingActivity[]
 }
 
 model Point {
-  id        Int       @id @default(autoincrement())
-  user      User      @relation(fields: [userId], references: [id])
-  userId    Int
-  cantidad  Int
-  fecha     DateTime  @default(now())
-  descripcion String?
+  id          Int       @id @default(autoincrement())
+  user        User      @relation(fields: [userId], references: [id])
+  userId      Int
+  amount      Int
+  date        DateTime  @default(now())
+  description String?
 }
 
 model Reward {
-  id        Int       @id @default(autoincrement())
-  nombre    String
-  descripcion String?
-  puntosNecesarios Int
-  fechaCreacion DateTime @default(now())
+  id                Int       @id @default(autoincrement())
+  name              String
+  description       String?
+  requiredPoints    Int
+  createdAt         DateTime  @default(now())
   rewardRedemptions RewardRedemption[]
 }
 
 model RewardRedemption {
-  id        Int       @id @default(autoincrement())
-  user      User      @relation(fields: [userId], references: [id])
-  userId    Int
-  reward    Reward    @relation(fields: [rewardId], references: [id])
-  rewardId  Int
-  fecha     DateTime  @default(now())
-}
-
-model RecyclingActivity {
   id          Int       @id @default(autoincrement())
   user        User      @relation(fields: [userId], references: [id])
   userId      Int
-  tipoMaterial String
-  cantidad    Int
-  fecha       DateTime  @default(now())
+  reward      Reward    @relation(fields: [rewardId], references: [id])
+  rewardId    Int
+  date        DateTime  @default(now())
+}
+
+model RecyclingActivity {
+  id            Int       @id @default(autoincrement())
+  user          User      @relation(fields: [userId], references: [id])
+  userId        Int
+  materialType  String
+  amount        Int
+  date          DateTime  @default(now())
 }

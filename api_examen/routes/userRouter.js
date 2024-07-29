@@ -2,6 +2,8 @@
 
 import { Router } from 'express';
 import { userControllers } from '../controllers/userControllers.js';
+import { userSchema } from '../schemas/userSchemas.js';
+import validateRequest from '../middlewares/validations.js';
 
 
 export const userRoutes = () => {
@@ -11,11 +13,11 @@ export const userRoutes = () => {
 
     userRouter.route('/user')//Para agrupar todos los metodos con los endpoints que son (user)
         .get(getUser)
-        .post(createUser)
+        .post(validateRequest(userSchema), createUser)
 
     userRouter.route('/user/:id')
         .get(getUserById)
         .delete(deleteById)
-        .patch(updateById)
+        .patch(validateRequest(userSchema), updateById)
     return userRouter;
 }

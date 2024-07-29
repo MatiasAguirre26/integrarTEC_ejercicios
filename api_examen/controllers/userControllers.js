@@ -1,114 +1,137 @@
 import { PrismaClient } from "@prisma/client"
+import HTTP_STATUS from "../helpers/httpStatus.js";
+import { hashPassword } from '../utils/bcrypt.js'; // Importar la función de hash
+import { generateToken } from '../utils/jwt.js'; // Importar la función para generar token
 
 //Logica de lo que va hacer la ruta, funcionalidad
 
 const prisma = new PrismaClient()
 
 export const userControllers = () => {
-    const getUser = async (_req,res)=> { //Funcionalidad para obtener usuarios
+    const getUser = async (_req, res, next) => {
         try {
-            const user = await prisma.user.findMany()
-
-            return res.status(200).json(user)
-        } catch(error) {
-            next(error) //que valla al siguiente middleware con el error
-        } finally {
-            await prisma.$disconnect()
-        }
-    }
-
-    const createUser = async (req,res,next) => {
-        const newUser = req.body
-        try {
-            const createUser = await prisma.user.create({
-                data: {
-                    newUser
-                }
-            })
-
-            const responseFormat = {
-                data: createUser,
-                message: 'Book retrieved successfully'
-            }
-            return res.status(200).json(responseFormat)
+            const users = await prisma.user.findMany();
+            return res.status(HTTP_STATUS.OK).json(users);
         } catch (error) {
-            next(error)
+            next(error);
         } finally {
-            await prisma.$disconnect()
+            await prisma.$disconnect();
         }
-    }
+    };
+    
+    const createUser = async (req, res, next) => {
+        const { name, email, password } = req.body;
+        try {
+            const hashedPassword = await hashPassword(password); // Hashear la contraseña
+            const createdUser = await prisma.user.create({
+                data: {
+                    name,
+                    email,
+                    password: hashedPassword, // Usar la contraseña hasheada
+                },
+            });
 
-    const getUserById = async (req,res,next) => {
-        const {id} = req.params
-        const userId = Number(id)
+            const token = generateToken({ id: createdUser.id, email: createdUser.email }); // Generar token
+            
+            return res.status(HTTP_STATUS.CREATED).json(createdUser);
+            // return res.status(HTTP_STATUS.CREATED).json({ user: createdUser, token });
+        } catch (error) {
+            next(error);
+        } finally {
+            await prisma.$disconnect();
+        }
+    };
+
+    // const loginUser = async (req, res, next) => {
+    //     const { email, password } = req.body;
+    //     try {
+    //         const user = await prisma.user.findUnique({
+    //             where: { email },
+    //         });
+
+    //         if (!user) {
+    //             return res.status(HTTP_STATUS.UNAUTHORIZED).json({ error: 'Invalid credentials' });
+    //         }
+
+    //         const isPasswordValid = await comparePassword(password, user.password);
+
+    //         if (!isPasswordValid) {
+    //             return res.status(HTTP_STATUS.UNAUTHORIZED).json({ error: 'Invalid credentials' });
+    //         }
+
+    //         const token = generateToken({ id: user.id, email: user.email });
+
+    //         return res.status(HTTP_STATUS.OK).json({ user, token });
+    //     } catch (error) {
+    //         next(error);
+    //     } finally {
+    //         await prisma.$disconnect();
+    //     }
+    // };
+
+    const getUserById = async (req, res, next) => {
+        const { id } = req.params;
         try {
             const user = await prisma.user.findUnique({
-                where: {
-                    id: userId
-                }
-            })
-
-            const responseFormat = {
-                data: user,
-                message: 'Book retrieved successfully'
-            }
-            return res.status(200).json(responseFormat)
-        } catch (error) {
-            next(error)
-        } finally {
-            await prisma.$disconnect()
-        }
-    }
-
-    const deleteById = async (req,res,next) => {
-        const {id} = req.params
-        const userId = Number(id)
-        try {
-            const user = await prisma.user.delete({
-                where: {
-                    id: userId
-                }
-            })
-
-            const responseFormat = {
-                data: user,
-                message: 'Book delete successfully'
-            }
-            return res.status(200).json(responseFormat)
-        } catch (error) {
-            next(error)
-        } finally {
-            await prisma.$disconnect()
-        }
-    }
-
-    const updateById = async (req,res,next) => {
-        const {id} = req.params
-        const userId = Number(id)
-        const newUserData = req.body
-        try {
-            const user = await prisma.user.update({
-                where: {
-                    id: userId
+                where: { id: Number(id) },
+                include: {
+                    points: true,
+                    rewardRedemptions: true,
+                    recyclingActivities: true,
                 },
-                data: newUserData
-            })
-
-            const responseFormat = {
-                data: user,
-                message: 'Book delete successfully'
+            });
+            if (!user) {
+                return res.status(HTTP_STATUS.NOT_FOUND).json({ error: 'User not found' });
             }
-            return res.status(200).json(responseFormat)
+            return res.status(HTTP_STATUS.OK).json(user);
         } catch (error) {
-            next(error)
+            next(error);
         } finally {
-            await prisma.$disconnect()
+            await prisma.$disconnect();
         }
-    }
+    };
+    
+    const deleteById = async (req, res, next) => {
+        const { id } = req.params;
+        try {
+            const deletedUser = await prisma.user.delete({
+                where: { id: Number(id) },
+            });
+            return res.status(HTTP_STATUS.OK).json(deletedUser);
+        } catch (error) {
+            next(error);
+        } finally {
+            await prisma.$disconnect();
+        }
+    };
+    
+    const updateById = async (req, res, next) => {
+        const { id } = req.params;
+        const newUserData = req.body;
+        // const { password, ...newUserData } = req.body;
+        try {
+            // Hashear la nueva contraseña si se proporciona
+            // if (password) {
+            //     const hashedPassword = await hashPassword(password); 
+            //     newUserData.password = hashedPassword;
+            // }
+            const updatedUser = await prisma.user.update({
+                where: { id: Number(id) },
+                data: newUserData,
+            });
+            return res.status(HTTP_STATUS.OK).json(updatedUser);
+        } catch (error) {
+            next(error);
+        } finally {
+            await prisma.$disconnect();
+        }
+    };
+    
 
     return {
         getUser,
         createUser,
+        loginUser, // Agregar loginUser al export
         getUserById,
         deleteById,
         updateById
