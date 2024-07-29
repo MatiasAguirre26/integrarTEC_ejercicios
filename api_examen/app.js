@@ -6,7 +6,7 @@ import { userRoutes } from "./routes/userRouter.js";
 import { rewardRoutes } from './routes/rewardRoutes.js';
 import { rewardRedemptionRoutes } from './routes/rewardRedemptionRoutes.js';
 import { recyclingActivityRoutes } from './routes/recyclingActivityRoutes.js';
-import { authRouter } from './routes/authRoutes.js';
+import { authRoutes} from "./routes/authRoutes.js"
 import { pointRoutes } from './routes/pointRoutes.js';
 
 import errorHandler from './middlewares/errorHandler.js';
@@ -29,7 +29,7 @@ app.get('/', (_req, res) => {
   });
 
 app.use('/api', userRoutes(), rewardRoutes(), rewardRedemptionRoutes(), recyclingActivityRoutes(), pointRoutes())
-app.use('/auth', authRouter());
+app.use('/auth', authRoutes());
 app.use(errorHandler)
 
 app.listen(SERVER_PORT, SERVER_HOST, () => console.log("Servidor levantado en el puerto: " , SERVER_PORT))
