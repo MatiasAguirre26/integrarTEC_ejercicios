@@ -14,7 +14,6 @@ import errorHandler from './middlewares/errorHandler.js';
 dotenv.config();
 
 const SERVER_PORT = process.env.SERVER_PORT || 3000;
-const SERVER_HOST = process.env.SERVER_HOST || 'localhost';
 
 const app = express();
 app.use(cors({
@@ -25,15 +24,14 @@ app.use(express.json())
 
 
 app.get('/', (_req, res) => {
-    res.send('Hello World!');
+    res.send('Inicio!');
   });
 
 app.use('/api', userRoutes(), rewardRoutes(), rewardRedemptionRoutes(), recyclingActivityRoutes(), pointRoutes())
 app.use('/auth', authRoutes());
 app.use(errorHandler)
 
-app.listen(SERVER_PORT, SERVER_HOST, () => console.log("Servidor levantado en el puerto: " , SERVER_PORT))
-// app.listen(SERVER_PORT, ()=> {
-//     console.log(`servidor levantado en ${SERVER_PORT}`)
-// })
+app.listen(SERVER_PORT, ()=> {
+    console.log(`servidor levantado en ${SERVER_PORT}`)
+})
 

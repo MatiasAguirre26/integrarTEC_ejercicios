@@ -1,9 +1,8 @@
 import { PrismaClient } from "@prisma/client"
 import HTTP_STATUS from "../helpers/httpStatus.js";
-import { hashPassword } from '../utils/bcrypt.js'; 
+import { hashPassword, comparePassword  } from '../utils/bcrypt.js'; 
 import { generateToken } from '../utils/jwt.js'; 
 
-//Logica de lo que va hacer la ruta, funcionalidad
 const prisma = new PrismaClient()
 
 export const userControllers = () => {
@@ -21,18 +20,17 @@ export const userControllers = () => {
     const createUser = async (req, res, next) => {
         const { name, email, password } = req.body;
         try {
-            const hashedPassword = await hashPassword(password); // Hashear la contraseña
+            const hashedPassword = await hashPassword(password);
             const createdUser = await prisma.user.create({
                 data: {
                     name,
                     email,
-                    password: hashedPassword, // Usar la contraseña hasheada
+                    password: hashedPassword,
                 },
             });
 
-            const token = generateToken({ id: createdUser.id, email: createdUser.email }); // Generar token
+            const token = generateToken({ id: createdUser.id, email: createdUser.email });
             
-            // return res.status(HTTP_STATUS.CREATED).json(createdUser);
             return res.status(HTTP_STATUS.CREATED).json({ user: createdUser, token });
         } catch (error) {
             next(error);
@@ -93,6 +91,11 @@ export const userControllers = () => {
     const deleteById = async (req, res, next) => {
         const { id } = req.params;
         try {
+            const user = await prisma.user.findUnique({ where: { id: Number(id) } });
+            if (!user) {
+                return res.status(HTTP_STATUS.NOT_FOUND).json({ error: 'El usuario no existe' });
+            }
+
             const deletedUser = await prisma.user.delete({
                 where: { id: Number(id) },
             });
@@ -106,14 +109,10 @@ export const userControllers = () => {
     
     const updateById = async (req, res, next) => {
         const { id } = req.params;
-        // const newUserData = req.body;
+
         const { password, ...newUserData } = req.body;
         try {
-            // Hashear la nueva contraseña si se proporciona
-            // if (password) {
-            //     const hashedPassword = await hashPassword(password); 
-            //     newUserData.password = hashedPassword;
-            // }
+
             const updatedUser = await prisma.user.update({
                 where: { id: Number(id) },
                 data: newUserData,
