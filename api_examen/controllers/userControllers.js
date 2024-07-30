@@ -39,32 +39,32 @@ export const userControllers = () => {
         }
     };
 
-    const loginUser = async (req, res, next) => {
-        const { email, password } = req.body;
-        try {
-            const user = await prisma.user.findUnique({
-                where: { email },
-            });
+    // const loginUser = async (req, res, next) => {
+    //     const { email, password } = req.body;
+    //     try {
+    //         const user = await prisma.user.findUnique({
+    //             where: { email },
+    //         });
 
-            if (!user) {
-                return res.status(HTTP_STATUS.UNAUTHORIZED).json({ error: 'Invalid credentials' });
-            }
+    //         if (!user) {
+    //             return res.status(HTTP_STATUS.UNAUTHORIZED).json({ error: 'Invalid credentials' });
+    //         }
 
-            const isPasswordValid = await comparePassword(password, user.password);
+    //         const isPasswordValid = await comparePassword(password, user.password);
 
-            if (!isPasswordValid) {
-                return res.status(HTTP_STATUS.UNAUTHORIZED).json({ error: 'Invalid credentials' });
-            }
+    //         if (!isPasswordValid) {
+    //             return res.status(HTTP_STATUS.UNAUTHORIZED).json({ error: 'Invalid credentials' });
+    //         }
 
-            const token = generateToken({ id: user.id, email: user.email });
+    //         const token = generateToken({ id: user.id, email: user.email });
 
-            return res.status(HTTP_STATUS.OK).json({ user, token });
-        } catch (error) {
-            next(error);
-        } finally {
-            await prisma.$disconnect();
-        }
-    };
+    //         return res.status(HTTP_STATUS.OK).json({ user, token });
+    //     } catch (error) {
+    //         next(error);
+    //     } finally {
+    //         await prisma.$disconnect();
+    //     }
+    // };
 
     const getUserById = async (req, res, next) => {
         const { id } = req.params;
@@ -109,10 +109,8 @@ export const userControllers = () => {
     
     const updateById = async (req, res, next) => {
         const { id } = req.params;
-
-        const { password, ...newUserData } = req.body;
+        const newUserData = req.body;
         try {
-
             const updatedUser = await prisma.user.update({
                 where: { id: Number(id) },
                 data: newUserData,
@@ -129,7 +127,7 @@ export const userControllers = () => {
     return {
         getUser,
         createUser,
-        loginUser,
+        //loginUser,
         getUserById,
         deleteById,
         updateById
